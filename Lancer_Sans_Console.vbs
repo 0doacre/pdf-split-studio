@@ -1,0 +1,5 @@
+' Script de lancement sans invite de commande (fenêtre console masquée)
+Set WshShell = CreateObject("WScript.Shell")
+WshShell.CurrentDirectory = CreateObject("Scripting.FileSystemObject").GetParentFolderName(WScript.ScriptFullName)
+WshShell.Run "python app.py", 0, False
+Set WshShell = Nothing

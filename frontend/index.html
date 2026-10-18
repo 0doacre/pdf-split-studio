@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PDF Split & Merge Studio - 100% Hors-ligne</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- En-tête de l'application -->
+  <header class="app-header">
+    <div class="brand">
+      <div class="brand-icon">
+        <svg viewBox="0 0 24 24">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="16" y1="13" x2="8" y2="13"></line>
+          <line x1="16" y1="17" x2="8" y2="17"></line>
+          <polyline points="10 9 9 9 8 9"></polyline>
+        </svg>
+      </div>
+      <div>
+        <h1 class="brand-title">PDF Split Studio</h1>
+        <p class="brand-subtitle">Découpe & Fusion • 100% Hors-ligne</p>
+      </div>
+    </div>
+
+    <!-- Navigation des modes -->
+    <nav class="nav-tabs">
+      <button class="tab-btn active" data-tab="tab-split" id="nav-btn-split">
+        <svg viewBox="0 0 24 24"><circle cx="6" cy="6" r="3"></circle><circle cx="6" cy="18" r="3"></circle><line x1="20" y1="4" x2="8.12" y2="15.88"></line><line x1="14.47" y1="14.48" x2="20" y2="20"></line><line x1="8.12" y1="8.12" x2="12" y2="12"></line></svg>
+        Découper
+      </button>
+      <button class="tab-btn" data-tab="tab-merge" id="nav-btn-merge">
+        <svg viewBox="0 0 24 24"><path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"></path></svg>
+        Fusionner
+      </button>
+      <button class="tab-btn" data-tab="tab-organize" id="nav-btn-organize">
+        <svg viewBox="0 0 24 24"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path></svg>
+        Organiser & Pivoter
+      </button>
+      <button class="tab-btn" data-tab="tab-security" id="nav-btn-security">
+        <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+        Sécurité & Confidentialité
+      </button>
+    </nav>
+
+    <!-- Badge de sécurité et statut -->
+    <div class="header-status" title="Aucune donnée ne transite par internet. Traitement 100% local sur votre machine.">
+      <span class="status-dot"></span>
+      <span>100% Hors-ligne & Sécurisé</span>
+    </div>
+  </header>
+
+  <!-- Contenu Principal -->
+  <main class="main-content">
+
+    <!-- ===================================================================
+         ONGLET 1 : DÉCOUPER (SPLIT)
+         =================================================================== -->
+    <div class="tab-pane active" id="tab-split">
+      <!-- Zone d'importation si aucun fichier -->
+      <div id="split-dropzone-section">
+        <div class="dropzone" id="split-dropzone">
+          <div class="dropzone-icon">
+            <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+          </div>
+          <h2 class="dropzone-title">Glissez-déposez votre document PDF ici</h2>
+          <p class="dropzone-desc">Ou parcourez les dossiers de votre ordinateur en un clic</p>
+          <div class="dropzone-actions">
+            <button class="btn btn-primary" id="btn-browse-split">
+              <svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+              Parcourir un PDF...
+            </button>
+            <input type="file" id="input-split-file" accept=".pdf" style="display:none;">
+          </div>
+        </div>
+      </div>
+
+      <!-- Section active quand un fichier est chargé -->
+      <div id="split-workspace" style="display:none;">
+        
+        <!-- Fiche d'information du fichier source -->
+        <div class="file-badge-card">
+          <div class="file-badge-info">
+            <div class="file-pdf-icon">PDF</div>
+            <div class="file-details">
+              <div class="file-name" id="split-file-name">document.pdf</div>
+              <div class="file-meta-row">
+                <span class="tag-badge accent" id="split-file-pages">0 pages</span>
+                <span class="tag-badge" id="split-file-size">0 Mo</span>
+                <span class="tag-badge" id="split-file-folder">Dossier source</span>
+                <span class="tag-badge" id="split-file-lock" style="display:none; color:#f87171;">Verrouillé</span>
+              </div>
+            </div>
+          </div>
+          <button class="btn btn-secondary btn-sm" id="btn-change-split-file">
+            <svg viewBox="0 0 24 24"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path></svg>
+            Changer de fichier
+          </button>
+        </div>
+
+        <!-- Grille en 2 colonnes : Configuration à gauche, Options d'export & Qualité à droite -->
+        <div class="grid-two-cols">
+          
+          <!-- Colonne gauche : Modes de découpe et Aperçu visuel -->
+          <div class="col-main">
+            
+            <!-- Sélection du mode de découpe -->
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title">
+                  <svg viewBox="0 0 24 24"><circle cx="6" cy="6" r="3"></circle><circle cx="6" cy="18" r="3"></circle><line x1="20" y1="4" x2="8.12" y2="15.88"></line><line x1="14.47" y1="14.48" x2="20" y2="20"></line><line x1="8.12" y1="8.12" x2="12" y2="12"></line></svg>
+                  Mode de découpage
+                </div>
+              </div>
+
+              <div class="split-modes-grid">
+                <!-- Mode 1 : Page par page -->
+                <div class="mode-card active" data-mode="page_by_page">
+                  <div class="mode-card-header">
+                    <div class="mode-icon">
+                      <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path></svg>
+                    </div>
+                    <span>Page par page</span>
+                  </div>
+                  <p class="mode-desc">Chaque page du document devient un fichier PDF individuel.</p>
+                </div>
+
+                <!-- Mode 2 : Paquets réguliers -->
+                <div class="mode-card" data-mode="chunk_size">
+                  <div class="mode-card-header">
+                    <div class="mode-icon">
+                      <svg viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+                    </div>
+                    <span>Par intervalle</span>
+                  </div>
+                  <p class="mode-desc">Découpe le document tous les N pages (ex: par 2, par 5...).</p>
+                </div>
+
+                <!-- Mode 3 : Nombre de parties égales -->
+                <div class="mode-card" data-mode="num_parts">
+                  <div class="mode-card-header">
+                    <div class="mode-icon">
+                      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                    </div>
+                    <span>En X parties</span>
+                  </div>
+                  <p class="mode-desc">Divise équitablement le document en un nombre fixe de fichiers.</p>
+                </div>
+
+                <!-- Mode 4 : Plages personnalisées -->
+                <div class="mode-card" data-mode="custom_ranges">
+                  <div class="mode-card-header">
+                    <div class="mode-icon">
+                      <svg viewBox="0 0 24 24"><line x1="4" y1="9" x2="20" y2="9"></line><line x1="4" y1="15" x2="20" y2="15"></line><line x1="10" y1="3" x2="8" y2="21"></line><line x1="16" y1="3" x2="14" y2="21"></line></svg>
+                    </div>
+                    <span>Plages personnalisées</span>
+                  </div>
+                  <p class="mode-desc">Saisissez des intervalles exacts comme « 1-3, 5, 8-10 ».</p>
+                </div>
+
+                <!-- Mode 5 : Sélection visuelle -->
+                <div class="mode-card" data-mode="custom_selection">
+                  <div class="mode-card-header">
+                    <div class="mode-icon">
+                      <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                    </div>
+                    <span>Sélection visuelle</span>
+                  </div>
+                  <p class="mode-desc">Cochez visuellement les pages à extraire ou supprimer.</p>
+                </div>
+
+                <!-- Mode 6 : Points de coupure -->
+                <div class="mode-card" data-mode="breakpoints">
+                  <div class="mode-card-header">
+                    <div class="mode-icon">
+                      <svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
+                    </div>
+                    <span>Points de coupure</span>
+                  </div>
+                  <p class="mode-desc">Coupez le PDF après des pages précises (ex: page 3 et 7).</p>
+                </div>
+              </div>
+
+              <!-- Options dynamiques selon le mode choisi -->
+              <div class="mode-config-box" id="mode-config-box">
+                <!-- Config Paquets de N pages -->
+                <div class="mode-config-item" id="config-chunk_size" style="display:none;">
+                  <label class="form-label">Nombre de pages par fichier exporté :</label>
+                  <div style="display:flex; align-items:center; gap:12px;">
+                    <input type="number" class="input-text" id="input-chunk-size" value="2" min="1" max="999" style="width:120px;">
+                    <span class="text-muted" id="preview-chunk-calc">Exemple : 1-2.pdf, 3-4.pdf...</span>
+                  </div>
+                </div>
+
+                <!-- Config Nombre de parties égales -->
+                <div class="mode-config-item" id="config-num_parts" style="display:none;">
+                  <label class="form-label">Nombre total de parties souhaitées :</label>
+                  <div style="display:flex; align-items:center; gap:12px;">
+                    <input type="number" class="input-text" id="input-num-parts" value="2" min="2" max="100" style="width:120px;">
+                    <span class="text-muted" id="preview-parts-calc">Division équilibrée des pages.</span>
+                  </div>
+                </div>
+
+                <!-- Config Plages personnalisées -->
+                <div class="mode-config-item" id="config-custom_ranges" style="display:none;">
+                  <label class="form-label">Intervalles de pages (séparés par des virgules) :</label>
+                  <input type="text" class="input-text" id="input-custom-ranges" placeholder="Ex: 1-3, 5, 8-10" style="margin-bottom:10px;">
+                  <div class="radio-card" style="padding:8px 12px;">
+                    <input type="checkbox" id="check-merge-ranges">
+                    <div class="radio-card-content">
+                      <div class="radio-card-title">Fusionner toutes les plages dans un seul fichier PDF</div>
+                      <div class="radio-card-sub">Si décoché, chaque plage crée un fichier distinct.</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Config Sélection visuelle interactive -->
+                <div class="mode-config-item" id="config-custom_selection" style="display:none;">
+                  <label class="form-label">Action sur les pages cochées :</label>
+                  <div class="radio-cards-group">
+                    <label class="radio-card">
+                      <input type="radio" name="selection_action" value="extract_separate" checked>
+                      <div class="radio-card-content">
+                        <div class="radio-card-title">Extraire chaque page cochée en fichier individuel</div>
+                        <div class="radio-card-sub">Chaque page sélectionnée génère son propre PDF.</div>
+                      </div>
+                    </label>
+                    <label class="radio-card">
+                      <input type="radio" name="selection_action" value="extract_merged">
+                      <div class="radio-card-content">
+                        <div class="radio-card-title">Fusionner les pages cochées dans un seul PDF</div>
+                        <div class="radio-card-sub">Crée un document unique contenant uniquement vos pages choisies.</div>
+                      </div>
+                    </label>
+                    <label class="radio-card">
+                      <input type="radio" name="selection_action" value="delete_selected">
+                      <div class="radio-card-content">
+                        <div class="radio-card-title">Supprimer les pages cochées (garder le reste)</div>
+                        <div class="radio-card-sub">Exclut les pages sélectionnées et conserve toutes les autres.</div>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+
+                <!-- Config Points de coupure -->
+                <div class="mode-config-item" id="config-breakpoints" style="display:none;">
+                  <label class="form-label">Numéros des pages où couper (séparés par des virgules) :</label>
+                  <input type="text" class="input-text" id="input-breakpoints" placeholder="Ex: 3, 7 (coupe après la p.3 et après la p.7)">
+                </div>
+
+                <!-- Message informatif pour Page par page -->
+                <div class="mode-config-item" id="config-page_by_page">
+                  <p style="font-size:0.85rem; color:var(--text-secondary);">
+                    Chaque page du document sera enregistrée séparément avec son numéro de page correspondant.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Grille interactive des miniatures de pages -->
+            <div class="card">
+              <div class="card-header thumbnails-header">
+                <div class="card-title">
+                  <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                  Aperçu des pages (<span id="count-selected-pages">0</span> sélectionnée(s))
+                </div>
+                <div class="thumbnails-filters">
+                  <button class="btn btn-secondary btn-sm" id="btn-select-all">Tout cocher</button>
+                  <button class="btn btn-secondary btn-sm" id="btn-deselect-all">Tout décocher</button>
+                  <button class="btn btn-secondary btn-sm" id="btn-select-even">Paires</button>
+                  <button class="btn btn-secondary btn-sm" id="btn-select-odd">Impaires</button>
+                  <button class="btn btn-secondary btn-sm" id="btn-select-invert">Inverser</button>
+                </div>
+              </div>
+
+              <!-- Conteneur des vignettes -->
+              <div class="thumbnails-grid" id="split-thumbnails-grid">
+                <!-- Les cartes de pages seront générées dynamiquement par app.js -->
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Colonne droite : Exportation, Qualité & Lancement -->
+          <div class="col-sidebar">
+            
+            <!-- Dossier d'exportation -->
+            <div class="card">
+              <div class="card-title" style="margin-bottom:14px;">
+                <svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+                Dossier de sauvegarde
+              </div>
+
+              <div class="radio-cards-group">
+                <!-- Option A : Même dossier que le PDF source -->
+                <label class="radio-card">
+                  <input type="radio" name="output_dir_mode" value="source" checked id="radio-dest-source">
+                  <div class="radio-card-content">
+                    <div class="radio-card-title">Même dossier que le PDF source</div>
+                    <div class="radio-card-sub" id="label-source-folder">Automatique</div>
+                  </div>
+                </label>
+
+                <!-- Sous-option : Sous-dossier propre -->
+                <div style="padding-left: 28px; margin-top: -4px;">
+                  <label style="display:flex; align-items:center; gap:8px; font-size:0.78rem; color:var(--text-secondary); cursor:pointer;">
+                    <input type="checkbox" id="check-subfolder" checked style="accent-color:var(--primary);">
+                    Créer un sous-dossier dédié (ex: <i>nom_decoupe/</i>)
+                  </label>
+                </div>
+
+                <!-- Option B : Dossier personnalisé -->
+                <label class="radio-card">
+                  <input type="radio" name="output_dir_mode" value="custom" id="radio-dest-custom">
+                  <div class="radio-card-content">
+                    <div class="radio-card-title">Choisir un autre dossier...</div>
+                    <div class="radio-card-sub" id="label-custom-folder">Non défini</div>
+                  </div>
+                </label>
+              </div>
+
+              <div id="custom-folder-picker-wrap" style="display:none; margin-top:10px;">
+                <div class="input-with-button">
+                  <input type="text" class="input-text" id="input-custom-folder-path" readonly placeholder="Aucun dossier sélectionné">
+                  <button class="btn btn-secondary btn-sm" id="btn-browse-folder">Parcourir...</button>
+                </div>
+              </div>
+
+              <!-- Préfixe de nom de fichier -->
+              <div class="form-group" style="margin-top:16px;">
+                <label class="form-label">Préfixe des fichiers générés :</label>
+                <input type="text" class="input-text" id="input-naming-prefix" placeholder="Préfixe du fichier">
+              </div>
+            </div>
+
+            <!-- Réglage de la qualité et compression -->
+            <div class="card">
+              <div class="card-title" style="margin-bottom:14px;">
+                <svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                Qualité & Compression
+              </div>
+
+              <div class="quality-pills">
+                <!-- Qualité originale (Lossless) -->
+                <div class="quality-pill active" data-quality="original">
+                  <div class="quality-pill-title">Originale (100%)</div>
+                  <div class="quality-pill-desc">Sans perte, fidélité totale</div>
+                </div>
+
+                <!-- Haute qualité -->
+                <div class="quality-pill" data-quality="high">
+                  <div class="quality-pill-title">Haute (200 DPI)</div>
+                  <div class="quality-pill-desc">Légère optimisation</div>
+                </div>
+
+                <!-- Standard / Équilibrée -->
+                <div class="quality-pill" data-quality="medium">
+                  <div class="quality-pill-title">Standard (150 DPI)</div>
+                  <div class="quality-pill-desc">Idéal web & partage</div>
+                </div>
+
+                <!-- Forte compression -->
+                <div class="quality-pill" data-quality="low">
+                  <div class="quality-pill-title">Forte (96 DPI)</div>
+                  <div class="quality-pill-desc">Taille fichier minimale</div>
+                </div>
+              </div>
+
+              <!-- Curseur si qualité personnalisée -->
+              <div class="quality-pill" data-quality="custom" style="margin-bottom:12px;">
+                <div class="quality-pill-title">Personnalisée...</div>
+                <div class="quality-pill-desc">Ajustez DPI et qualité JPEG</div>
+              </div>
+
+              <div id="custom-quality-sliders" style="display:none; padding:12px; background:var(--bg-input); border-radius:var(--radius-sm); margin-bottom:14px;">
+                <div class="slider-group">
+                  <div class="slider-label-row">
+                    <span>Résolution max :</span>
+                    <strong id="val-dpi">150 DPI</strong>
+                  </div>
+                  <input type="range" class="slider-input" id="slider-dpi" min="72" max="300" step="10" value="150">
+                </div>
+                <div class="slider-group">
+                  <div class="slider-label-row">
+                    <span>Qualité JPEG :</span>
+                    <strong id="val-jpeg">75%</strong>
+                  </div>
+                  <input type="range" class="slider-input" id="slider-jpeg" min="30" max="95" step="5" value="75">
+                </div>
+              </div>
+
+              <!-- Options de sécurité & métadonnées -->
+              <div style="border-top:1px solid var(--border-subtle); padding-top:14px;">
+                <label style="display:flex; align-items:flex-start; gap:8px; font-size:0.78rem; color:var(--text-secondary); cursor:pointer; margin-bottom:10px;">
+                  <input type="checkbox" id="check-strip-meta" style="accent-color:var(--primary); margin-top:2px;">
+                  <span><b>Nettoyer les métadonnées</b> (Auteur, Logiciel, Données cachées) pour la vie privée</span>
+                </label>
+
+                <label style="display:flex; align-items:center; gap:8px; font-size:0.78rem; color:var(--text-secondary); cursor:pointer;">
+                  <input type="checkbox" id="check-encrypt-split" style="accent-color:var(--primary);">
+                  <span>Protéger par mot de passe (Chiffrement AES-256)</span>
+                </label>
+                <div id="split-password-input-wrap" style="display:none; margin-top:8px;">
+                  <input type="password" class="input-text" id="input-split-password" placeholder="Mot de passe du fichier exporté">
+                </div>
+              </div>
+            </div>
+
+            <!-- Bouton d'action principal -->
+            <button class="btn btn-action-large" id="btn-execute-split">
+              <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+              Lancer le découpage
+            </button>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================
+         ONGLET 2 : FUSIONNER (MERGE)
+         =================================================================== -->
+    <div class="tab-pane" id="tab-merge">
+      <div class="grid-two-cols">
+        
+        <!-- Colonne gauche : File d'attente des PDF à fusionner -->
+        <div class="col-main">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <svg viewBox="0 0 24 24"><path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"></path></svg>
+                Fichiers à fusionner dans l'ordre
+              </div>
+              <div style="display:flex; gap:8px;">
+                <button class="btn btn-primary btn-sm" id="btn-add-merge-files">
+                  <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                  Ajouter des PDF...
+                </button>
+                <button class="btn btn-secondary btn-sm" id="btn-clear-merge-queue">Vider la liste</button>
+              </div>
+            </div>
+
+            <!-- Liste ordonnée des fichiers -->
+            <div class="merge-list" id="merge-files-queue">
+              <!-- Rempli dynamiquement -->
+              <div id="merge-empty-state" style="text-align:center; padding:48px 20px; color:var(--text-muted);">
+                <div style="font-size:2.5rem; margin-bottom:10px;">📑</div>
+                <p style="font-size:1rem; font-weight:600; color:var(--text-secondary);">Aucun fichier dans la file de fusion</p>
+                <p style="font-size:0.82rem; margin-top:4px;">Ajoutez au moins 2 fichiers PDF pour les assembler dans l'ordre souhaité.</p>
+              </div>
+            </div>
+
+            <!-- Résumé du total -->
+            <div id="merge-summary-bar" style="display:none; padding:12px 16px; background:var(--bg-elevated); border-radius:var(--radius-sm); font-size:0.85rem; color:var(--text-secondary); display:flex; justify-content:space-between; align-items:center;">
+              <span>Total : <strong id="merge-total-files" style="color:var(--text-primary);">0 fichiers</strong></span>
+              <span>Pages estimées : <strong id="merge-total-pages" style="color:var(--accent-green);">0 pages</strong></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Colonne droite : Réglages d'exportation de la fusion -->
+        <div class="col-sidebar">
+          
+          <div class="card">
+            <div class="card-title" style="margin-bottom:14px;">
+              <svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path></svg>
+              Fichier résultant
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Nom du fichier fusionné :</label>
+              <input type="text" class="input-text" id="input-merge-filename" value="Document_fusionne.pdf">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Dossier de sauvegarde :</label>
+              <div class="radio-cards-group">
+                <label class="radio-card">
+                  <input type="radio" name="merge_dir_mode" value="first_file" checked id="radio-merge-first-file">
+                  <div class="radio-card-content">
+                    <div class="radio-card-title">Dossier du 1er fichier</div>
+                    <div class="radio-card-sub" id="label-merge-first-folder">Automatique</div>
+                  </div>
+                </label>
+                <label class="radio-card">
+                  <input type="radio" name="merge_dir_mode" value="custom" id="radio-merge-custom">
+                  <div class="radio-card-content">
+                    <div class="radio-card-title">Dossier personnalisé...</div>
+                    <div class="radio-card-sub" id="label-merge-custom-folder">Non défini</div>
+                  </div>
+                </label>
+              </div>
+
+              <div id="merge-custom-folder-wrap" style="display:none; margin-top:10px;">
+                <div class="input-with-button">
+                  <input type="text" class="input-text" id="input-merge-custom-folder" readonly placeholder="Dossier de destination">
+                  <button class="btn btn-secondary btn-sm" id="btn-browse-merge-folder">Parcourir...</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Qualité de fusion -->
+            <div class="form-group" style="border-top:1px solid var(--border-subtle); padding-top:14px;">
+              <label class="form-label">Optimisation de taille :</label>
+              <select class="input-select" id="select-merge-quality">
+                <option value="original">Qualité Originale (100% sans perte)</option>
+                <option value="high">Haute qualité (200 DPI - Légère réduction)</option>
+                <option value="medium">Standard (150 DPI - Idéal partage)</option>
+                <option value="low">Forte compression (96 DPI - Fichier léger)</option>
+              </select>
+            </div>
+
+            <!-- Protection & Métadonnées -->
+            <div style="border-top:1px solid var(--border-subtle); padding-top:14px;">
+              <label style="display:flex; align-items:center; gap:8px; font-size:0.78rem; color:var(--text-secondary); cursor:pointer; margin-bottom:10px;">
+                <input type="checkbox" id="check-merge-strip-meta" style="accent-color:var(--primary);">
+                <span>Nettoyer les métadonnées (Confidentialité)</span>
+              </label>
+
+              <label style="display:flex; align-items:center; gap:8px; font-size:0.78rem; color:var(--text-secondary); cursor:pointer;">
+                <input type="checkbox" id="check-merge-encrypt" style="accent-color:var(--primary);">
+                <span>Chiffrer avec un mot de passe (AES-256)</span>
+              </label>
+              <div id="merge-password-wrap" style="display:none; margin-top:8px;">
+                <input type="password" class="input-text" id="input-merge-password" placeholder="Mot de passe requis à l'ouverture">
+              </div>
+            </div>
+          </div>
+
+          <!-- Bouton fusionner -->
+          <button class="btn btn-action-large" id="btn-execute-merge">
+            <svg viewBox="0 0 24 24"><path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"></path></svg>
+            Fusionner les documents
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================
+         ONGLET 3 : ORGANISER & PIVOTER
+         =================================================================== -->
+    <div class="tab-pane" id="tab-organize">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">
+              <svg viewBox="0 0 24 24"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path></svg>
+              Organiseur visuel et rotation des pages
+            </div>
+            <div class="card-description">Pivotez des pages individuelles, orientez tout le document ou supprimez les pages superflues.</div>
+          </div>
+          <div style="display:flex; gap:8px;">
+            <button class="btn btn-secondary btn-sm" id="btn-rotate-all-right">
+              <svg viewBox="0 0 24 24"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path></svg>
+              Tourner tout +90°
+            </button>
+            <button class="btn btn-secondary btn-sm" id="btn-reset-rotations">Réinitialiser les rotations</button>
+          </div>
+        </div>
+
+        <div id="organize-workspace-empty" style="text-align:center; padding:48px 20px; color:var(--text-muted);">
+          <p>Chargez un document dans l'onglet « Découper » pour organiser et faire pivoter ses pages.</p>
+        </div>
+
+        <div id="organize-workspace-content" style="display:none;">
+          <div class="thumbnails-grid" id="organize-thumbnails-grid" style="max-height:600px;">
+            <!-- Généré dynamiquement -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================
+         ONGLET 4 : SÉCURITÉ & CONFIDENTIALITÉ
+         =================================================================== -->
+    <div class="tab-pane" id="tab-security">
+      <div class="card" style="max-width:860px; margin:0 auto;">
+        <div class="card-title" style="font-size:1.3rem; margin-bottom:14px;">
+          <svg viewBox="0 0 24 24" style="width:24px; height:24px;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+          Garanties de sécurité et protection des données
+        </div>
+
+        <div style="color:var(--text-secondary); font-size:0.92rem; line-height:1.7; display:flex; flex-direction:column; gap:16px;">
+          <div style="background:rgba(16, 185, 129, 0.08); border-left:4px solid #10b981; padding:14px 18px; border-radius:4px;">
+            <strong style="color:#34d399; font-size:1rem;">🔒 Fonctionnement 100% Hors-ligne</strong><br>
+            Ce logiciel ne se connecte à aucun serveur externe et n'émet aucune télémétrie. Tout le traitement (analyse, découpe, rendu graphique, compression et fusion) s'exécute strictement sur la mémoire vive et le disque local de votre machine.
+          </div>
+
+          <div style="background:var(--bg-elevated); padding:16px; border-radius:var(--radius-md); border:1px solid var(--border-subtle);">
+            <strong style="color:var(--text-primary);">🛡️ Nettoyage des métadonnées invisibles</strong>
+            <p style="margin-top:6px; font-size:0.86rem; color:var(--text-muted);">
+              Les fichiers PDF contiennent souvent des métadonnées cachées : nom de l'auteur, nom d'ordinateur, version du logiciel de création, dates précises et historique de révision. L'option « Nettoyer les métadonnées » purge ces informations pour garantir un partage anonyme et confidentiel.
+            </p>
+          </div>
+
+          <div style="background:var(--bg-elevated); padding:16px; border-radius:var(--radius-md); border:1px solid var(--border-subtle);">
+            <strong style="color:var(--text-primary);">🔐 Chiffrement AES-256 standard de l'industrie</strong>
+            <p style="margin-top:6px; font-size:0.86rem; color:var(--text-muted);">
+              Vous pouvez verrouiller n'importe quel PDF exporté ou fusionné avec un mot de passe fort protégé par l'algorithme AES-256. Sans le mot de passe, le document est totalement illisible, même en cas de copie non autorisée.
+            </p>
+          </div>
+
+          <div style="background:var(--bg-elevated); padding:16px; border-radius:var(--radius-md); border:1px solid var(--border-subtle);">
+            <strong style="color:var(--text-primary);">⚡ Préservation intégrale de la qualité vectorielle</strong>
+            <p style="margin-top:6px; font-size:0.86rem; color:var(--text-muted);">
+              En mode « Qualité Originale », aucune recompression d'image n'est appliquée : les polices vectorielles, tracés mathématiques et images haute résolution sont conservés au bit près sans la moindre dégradation.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ===================================================================
+       MODAL DE SUCCÈS / RÉSULTAT
+       =================================================================== -->
+  <div class="modal-overlay" id="modal-result">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title">
+          <svg viewBox="0 0 24 24" style="stroke:#10b981;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+          Opération terminée avec succès !
+        </div>
+        <button class="modal-close" id="btn-close-result-modal">
+          <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+
+      <div class="success-banner">
+        <div class="success-icon">
+          <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        </div>
+        <div>
+          <strong style="font-size:1.05rem; color:#fff;" id="result-headline">Vos fichiers ont été générés !</strong>
+          <p style="font-size:0.84rem; color:var(--text-secondary); margin-top:4px;" id="result-subline">
+            Tous les fichiers ont été enregistrés dans votre dossier de destination.
+          </p>
+        </div>
+      </div>
+
+      <!-- Statistiques de l'opération -->
+      <div class="stats-grid">
+        <div class="stat-box">
+          <div class="stat-val" id="stat-files-count">0</div>
+          <div class="stat-label">Fichiers créés</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val" id="stat-total-pages">0</div>
+          <div class="stat-label">Pages traitées</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val" id="stat-output-size">0 Mo</div>
+          <div class="stat-label">Taille totale</div>
+        </div>
+      </div>
+
+      <!-- Liste détaillée des fichiers créés -->
+      <label class="form-label">Fichiers enregistrés :</label>
+      <div class="result-files-list" id="result-files-container">
+        <!-- Rempli dynamiquement -->
+      </div>
+
+      <!-- Boutons d'action -->
+      <div style="display:flex; gap:12px; justify-content:flex-end;">
+        <button class="btn btn-secondary" id="btn-dismiss-result">Fermer</button>
+        <button class="btn btn-primary" id="btn-open-result-folder">
+          <svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+          Ouvrir le dossier dans l'Explorateur
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================
+       MODAL DE PRÉVISUALISATION GRANDE TAILLE (ZOOM)
+       =================================================================== -->
+  <div class="modal-overlay" id="modal-preview">
+    <div class="modal-card" style="max-width:850px; text-align:center;">
+      <div class="modal-header">
+        <div class="modal-title" id="preview-modal-title">Aperçu de la page</div>
+        <button class="modal-close" id="btn-close-preview-modal">
+          <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+      <div style="background:#090d16; border-radius:var(--radius-md); padding:16px; max-height:75vh; overflow:auto;">
+        <img id="preview-modal-img" src="" alt="Aperçu grand format" style="max-width:100%; height:auto; box-shadow:var(--shadow-lg); border-radius:4px;">
+      </div>
+    </div>
+  </div>
+
+  <!-- Conteneur de notifications Toast -->
+  <div id="toast-container"></div>
+
+  <!-- Script JS Applicatif -->
+  <script src="js/app.js"></script>
+</body>
+</html>

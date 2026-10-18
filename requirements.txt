@@ -1,0 +1,11 @@
+# PDF Split & Merge Studio - Dépendances Python
+# Toutes les bibliothèques s'exécutent 100% hors-ligne
+
+pypdf>=6.14.0
+pypdfium2>=5.11.0
+pillow>=11.0.0
+fastapi>=0.115.0
+uvicorn>=0.30.0
+pywebview>=6.2.0
+pythonnet>=3.0.0
+reportlab>=4.0.0
