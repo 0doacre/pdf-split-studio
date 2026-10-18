@@ -304,7 +304,21 @@ def api_merge(req: MergeRequest):
         raise HTTPException(status_code=400, detail=str(e))
 
 
-# Montage des fichiers statiques du frontend
-frontend_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "frontend"))
+# Montage des fichiers statiques du frontend (compatible dev & PyInstaller)
+def get_frontend_dir() -> str:
+    if getattr(sys, "frozen", False):
+        if hasattr(sys, "_MEIPASS"):
+            cand = os.path.join(sys._MEIPASS, "frontend")
+            if os.path.isdir(cand):
+                return cand
+        cand = os.path.join(os.path.dirname(sys.executable), "frontend")
+        if os.path.isdir(cand):
+            return cand
+    cand_dev = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "frontend"))
+    if os.path.isdir(cand_dev):
+        return cand_dev
+    return os.path.abspath("frontend")
+
+frontend_dir = get_frontend_dir()
 if os.path.isdir(frontend_dir):
     app.mount("/", StaticFiles(directory=frontend_dir, html=True), name="frontend")

@@ -22,8 +22,12 @@ try:
 except Exception:
     pass
 
-# Ajouter le répertoire racine au PYTHONPATH
-WORKSPACE_DIR = os.path.dirname(os.path.abspath(__file__))
+# Ajouter le répertoire racine au PYTHONPATH (compatible PyInstaller)
+if getattr(sys, "frozen", False):
+    WORKSPACE_DIR = getattr(sys, "_MEIPASS", os.path.dirname(sys.executable))
+else:
+    WORKSPACE_DIR = os.path.dirname(os.path.abspath(__file__))
+
 if WORKSPACE_DIR not in sys.path:
     sys.path.insert(0, WORKSPACE_DIR)
 
@@ -42,17 +46,39 @@ def find_free_port(start_port: int = 48120, max_attempts: int = 100) -> int:
     return start_port
 
 
+def log_debug(msg: str):
+    """Écrit dans le journal de débogage temporaire."""
+    try:
+        import tempfile
+        log_file = os.path.join(tempfile.gettempdir(), "pdf_split_studio.log")
+        with open(log_file, "a", encoding="utf-8") as f:
+            f.write(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] {msg}\n")
+    except Exception:
+        pass
+
+
 def start_uvicorn(port: int):
     """Démarre le serveur Uvicorn local."""
-    config = uvicorn.Config(
-        app=app,
-        host="127.0.0.1",
-        port=port,
-        log_level="warning",
-        access_log=False
-    )
-    server = uvicorn.Server(config)
-    server.run()
+    import asyncio
+    try:
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+    except Exception as e:
+        log_debug(f"asyncio loop error: {e}")
+
+    try:
+        config = uvicorn.Config(
+            app=app,
+            host="127.0.0.1",
+            port=port,
+            log_level="warning",
+            access_log=False,
+            loop="asyncio"
+        )
+        server = uvicorn.Server(config)
+        server.run()
+    except Exception as e:
+        log_debug(f"Uvicorn server error: {e}")
 
 
 def main():
@@ -112,4 +138,6 @@ def main():
 
 
 if __name__ == "__main__":
+    import multiprocessing
+    multiprocessing.freeze_support()
     main()
